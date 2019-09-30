@@ -30,23 +30,13 @@ var histogramMargin = 50;
 var histogramMarginTop = popupOffsetY + 20 + fontSize * 2 + histogramTextNamesGap * 3;
 var histogramTextColor = '#000';
 
+
+// рандомное число в рамках аргументов
+var getRandomNumber = function (min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+};
+
 window.renderStatistics = function (ctx, names, times ) {
-
-  // рандомное число в рамках аргументов
-  function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  // самое высокое значение в массиве
-  function getMaxElement(arr) {
-    var maxEl = arr[0];
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i] > maxEl) {
-        maxEl = arr[i];
-      }
-    }
-    return maxEl;
-  }
 
   // тень таблицы
   ctx.fillStyle = shadowColor;
@@ -63,15 +53,21 @@ window.renderStatistics = function (ctx, names, times ) {
   ctx.fillText(titleMessage, titleOffsetX, titleOffsetY);
   ctx.fillText(subTitleMessage, subTitleOffsetX, subTitleOffsetY);
 
-  for ( var i = 0; i < 4; i++) {
+  // самое высокое значение в массиве
+  var maxTime = Math.max.apply(null, times);
+  var shortestArrayLength = Math.min(names.length,times.length);
 
-    var maxTime = getMaxElement(times);
-    var gameTime = parseInt(times[i], 10);
+  for ( var i = 0; i < shortestArrayLength; i++) {
+
+    var gameTime = Math.floor(times[i]);
+    // var gameTime = parseInt(times[i], 10);
+    var playerName = names[i];
     var histogramHeight = (histogramMaxHeight * gameTime) / maxTime;
     var histogramPositionX = (popupOffsetX + histogramMargin) + (histogramWidth + histogramMargin) * i;
     var histogramPositionY = popupOffsetY + (histogramMaxHeight - ((histogramMaxHeight * gameTime) / maxTime)) + histogramMarginTop;
 
-    ctx.fillStyle = names[i] == 'Вы' ? 'rgba(255, 0, 0, 1)' : 'rgba(31, 58, 147, 0.' + parseInt(getRandomArbitrary(5, 10), 10) + ')';
+
+    ctx.fillStyle = playerName == 'Вы' ? 'rgba(255, 0, 0, 1)' : 'rgba(31, 58, 147, 0.' + getRandomNumber(5, 10) + ')';
 
     // рисуем гистограммы
     ctx.fillRect(histogramPositionX, histogramPositionY, histogramWidth, histogramHeight);
@@ -79,7 +75,7 @@ window.renderStatistics = function (ctx, names, times ) {
     // рисуем имена и время
     ctx.fillStyle = histogramTextColor;
     ctx.fillText( gameTime, histogramPositionX, histogramPositionY - histogramTextTimesGap );
-    ctx.fillText( names[i],histogramPositionX, histogramTextNamesOffsetY );
+    ctx.fillText( playerName, histogramPositionX, histogramTextNamesOffsetY );
   }
 
 };
